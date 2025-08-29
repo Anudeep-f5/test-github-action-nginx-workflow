@@ -27,10 +27,10 @@ jobs:
             --tenant "${{ secrets.AZURE_TENANT_ID }}"
 
       - name: Sync NGINX Config to Azure
-        # uses: kuthiala/nginx-for-azure-deploy-action/github-action@use_nginx_cli
-        # uses: kuthiala/nginx-for-azure-deploy-action@main
+        # uses: Anudeep-F5/nginx-for-azure-deploy-action/github-action@use_nginx_cli
+        # uses: Anudeep-F5/nginx-for-azure-deploy-action@feauture/dry-run
         # uses: nginxinc/nginx-for-azure-deploy-action/github-action@v0.4.1
-        uses: nginxinc/nginx-for-azure-deploy-action@v0.5.0
+        uses:  Anudeep-F5/nginx-for-azure-deploy-action@feauture/dry-run
         with:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           resource-group-name: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
@@ -39,6 +39,6 @@ jobs:
           nginx-root-config-file: nginx.conf
           transformed-nginx-config-directory-path: /etc/nginx/
           # protected-files: protected.conf,protected2.conf
-          nginx-certificates: '[{"certificateName": "myCertificate", "keyvaultSecret": "https://nlbtest-customer.vault.azure.net/secrets/aniruddh-test-cert/ee6101bcc4a24a2da15b272b3cb2ae84", "certificateVirtualPath": "/etc/nginx/certs/server1.crt", "keyVirtualPath": "/etc/nginx/certs/server2.key" },{"certificateName": "examplecert", "keyvaultSecret": "https://nlbtest-customer.vault.azure.net/secrets/aniruddh-test-cert-2/7734a318b5274395b3de449d0fc4fd00", "certificateVirtualPath": "/etc/nginx/certs/server12.crt", "keyVirtualPath": "/etc/nginx/certs/server12.key" }]'
+          nginx-certificates: '[{"certificateName": "anudeep-cert-test", "keyvaultSecret": "https://anudeep-cert-test.vault.azure.net/secrets/anudeep-test-cert-secret/3c47b4591a394214860b040138709d43", "certificateVirtualPath": "/etc/nginx/certs/server1.crt", "keyVirtualPath": "/etc/nginx/certs/server2.key" }]'
           # debug: true
           nginx-deployment-location: eastus2
