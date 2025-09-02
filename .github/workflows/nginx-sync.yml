@@ -2,6 +2,10 @@ name: Sync NGINX Configs to Azure
 
 on:
   workflow_dispatch:
+  pull_request:
+    paths:
+      - "configs/**"
+      - "**/*.conf"
   push:
     branches:
       - master
@@ -11,10 +15,13 @@ on:
 permissions:
   id-token: write
   contents: read
+  pull-requests: write
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    env:
+      DRY-RUN: ${{ github.event.name == 'pull_request' && 'true' || 'false' }}
     steps:
       - name: Checkout repository content
         uses: actions/checkout@v4
@@ -27,18 +34,31 @@ jobs:
             --tenant "${{ secrets.AZURE_TENANT_ID }}"
 
       - name: Sync NGINX Config to Azure
+        id: run-action
         # uses: Anudeep-F5/nginx-for-azure-deploy-action/github-action@use_nginx_cli
-        # uses: Anudeep-F5/nginx-for-azure-deploy-action@feauture/dry-run
+        # uses: Anudeep-F5/nginx-for-azure-deploy-action@feat/dry-run
         # uses: nginxinc/nginx-for-azure-deploy-action/github-action@v0.4.1
-        uses:  Anudeep-F5/nginx-for-azure-deploy-action@feauture/dry-run
+        uses:  Anudeep-F5/nginx-for-azure-deploy-action@feat/dry-run
         with:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           resource-group-name: ${{ secrets.AZURE_RESOURCE_GROUP_NAME }}
           nginx-deployment-name: ${{ secrets.NGINX_DEPLOYMENT_NAME }}
           nginx-config-directory-path: configs/
           nginx-root-config-file: nginx.conf
-          transformed-nginx-config-directory-path: /etc/nginx/
+          debug : "true"
+          dry-run: "${{ env.DRY-RUN }}"
+          dry-run-artifact-name: "nginx-config-dry-run"
+          #transformed-nginx-config-directory-path: /etc/nginx/
           # protected-files: protected.conf,protected2.conf
-          nginx-certificates: '[{"certificateName": "anudeep-cert-test", "keyvaultSecret": "https://anudeep-cert-test.vault.azure.net/secrets/anudeep-test-cert-secret/3c47b4591a394214860b040138709d43", "certificateVirtualPath": "/etc/nginx/certs/server1.crt", "keyVirtualPath": "/etc/nginx/certs/server2.key" }]'
+          #nginx-certificates: '[{"certificateName": "anudeep-cert-test", "keyvaultSecret": "https://anudeep-cert-test.vault.azure.net/secrets/anudeep-test-cert-secret/3c47b4591a394214860b040138709d43", "certificateVirtualPath": "/etc/nginx/certs/server1.crt", "keyVirtualPath": "/etc/nginx/certs/server2.key" }]'
           # debug: true
-          nginx-deployment-location: eastus2
+          #nginx-deployment-location: eastus2
+
+      - name: Upload dry-run report
+        if: ${{ env.DRY_RUN == 'true' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: nginx-config-dry-run
+          path: nginx_dry_run_report.txt
+
+
