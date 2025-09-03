@@ -59,6 +59,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: nginx-config-dry-run
-          path: nginx_dry_run_report.txt
+          path: ${{ github.workspace }} /nginx_dry_run_report.txt
 
 
