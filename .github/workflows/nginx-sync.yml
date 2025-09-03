@@ -58,7 +58,7 @@ jobs:
           #nginx-deployment-location: eastus2
 
       - name: Upload dry-run report
-        if: ${{ env.DRY_RUN == 'true' && hashFiles('nginx_dry_run_report.txt) != '' }}
+        if: ${{ env.DRY_RUN == 'true' && hashFiles('nginx_dry_run_report.txt') != '' }}
         uses: actions/upload-artifact@v4
         with:
           name: nginx-config-dry-run
