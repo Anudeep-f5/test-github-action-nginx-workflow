@@ -33,6 +33,9 @@ jobs:
             --password "${{ secrets.AZURE_CLIENT_SECRET }}" \
             --tenant "${{ secrets.AZURE_TENANT_ID }}"
 
+      - name: set DRY_RUN env ( PRs => true )
+        run: echo "DRY_RUN=${{bgithub.event_name == 'pull_request' && 'true' || 'false' }}" >> $GITHUB_ENV
+
       - name: Sync NGINX Config to Azure
         id: run-action
         # uses: Anudeep-F5/nginx-for-azure-deploy-action/github-action@use_nginx_cli
@@ -55,10 +58,11 @@ jobs:
           #nginx-deployment-location: eastus2
 
       - name: Upload dry-run report
-        if: ${{ env.DRY_RUN == 'true' }}
+        if: ${{ env.DRY_RUN == 'true' && hashFiles('nginx_dry_run_report.txt) != '' }}
         uses: actions/upload-artifact@v4
         with:
           name: nginx-config-dry-run
           path: ${{ github.workspace }} /nginx_dry_run_report.txt
+          if-no-files-found: error
 
 
