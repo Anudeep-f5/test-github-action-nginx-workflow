@@ -34,7 +34,7 @@ jobs:
             --tenant "${{ secrets.AZURE_TENANT_ID }}"
 
       - name: set DRY_RUN env ( PRs => true )
-        run: echo "DRY_RUN=${{bgithub.event_name == 'pull_request' && 'true' || 'false' }}" >> $GITHUB_ENV
+        run: echo "DRY_RUN=${{github.event_name == 'pull_request' && 'true' || 'false' }}" >> $GITHUB_ENV
 
       - name: Sync NGINX Config to Azure
         id: run-action
